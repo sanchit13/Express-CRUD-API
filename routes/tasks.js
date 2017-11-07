@@ -4,19 +4,61 @@ const Task = require("../models/task");
 
 router.get('/', function (req, res) {
     // This function responds with a List of tasks
-    res.json({
-        message: "Tasks GET request",
-        data : []
-    });
-})
+    var limit = Number(req.query.limit || 1000000000);
+    var skip = Number(req.query.skip || 0);
+    var sort = req.query.sort || null;
+    var select = req.query.sort || null;
+    var where = req.query.where || null;
+
+    if(where){
+        where = JSON.parse(where);
+    }
+    if(sort){
+        sort = JSON.parse(sort);
+    }
+    if(select){
+        select= JSON.parse(select);
+    }
+
+    Task.find()
+        .where(where)
+        .sort(sort)
+        .select(select)
+        .skip(skip)
+        .limit(limit)
+        .then(function (tasks) {
+            if (!req.query.count || req.query.count == false) {
+                res.status(200).json({
+                    message: "OK",
+                    data: tasks
+                });
+            } else {
+                res.status(200).json({
+                    message: "OK - Count Requested",
+                    data: tasks.length
+                });
+            }
+        });
+});
 
 router.get('/:id', function (req, res) {
     //Respond with details of specified task or 404 error
-    res.json({
-        message: req.params.id,
-        data : []
+    var id = req.params.id.toString();
+    Task.findById(id, function (err, task) {
+        if (task) {
+            res.status(200).json({
+                message: "OK - Task Found!",
+                data: task
+            });
+        } else {
+            console.log("in else")
+            res.status(404).json({
+                message: "Task Not Found!!",
+                data: []
+            });
+        }
     });
-})
+});
 
 
 

@@ -23,11 +23,12 @@ var TaskSchema = new mongoose.Schema({
         type: String,
         default: "unassigned"
     },
-    
+
     description: {
         type: String,
         default: "Not Available"
     },
+    
     dateCreated: {
         type: Date,
         default: Date.now
